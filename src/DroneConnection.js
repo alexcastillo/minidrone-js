@@ -259,7 +259,10 @@ class DroneConnection extends EventEmitter {
     return new Promise(accept => {
       Logger.debug(`SEND ${command.bufferType}[${packetId}]: `, command.toString());
 
-      this.getCharacteristic(command.sendCharacteristicUuid).write(buffer, true);
+      const characteristic = this.getCharacteristic(command.sendCharacteristicUuid);
+      if (characteristic) {
+        characteristic.write(buffer, true);
+      }
 
       switch (command.bufferType) {
         case 'DATA_WITH_ACK':
@@ -456,7 +459,10 @@ class DroneConnection extends EventEmitter {
     buffer.writeUIntLE(this._getStep(characteristic), 1, 1);
     buffer.writeUIntLE(packetId, 2, 1);
 
-    this.getCharacteristic('fa' + characteristic).write(buffer, true);
+    const characteristic = this.getCharacteristic('fa' + characteristic);
+    if (characteristic) {
+      characteristic.write(buffer, true);
+    }
   }
 }
 
