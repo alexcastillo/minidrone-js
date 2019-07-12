@@ -173,15 +173,23 @@ class DroneConnection extends EventEmitter {
       for (const uuid of handshakeUuids) {
         const target = this.getCharacteristic(uuid);
 
-        target.subscribe();
+        if (target) {
+          target.subscribe();
+        } else {
+          Logger.debug(`Handshake id ${uuid} not found`);
+        }
       }
 
       Logger.debug('Adding listeners (fb uuid prefix)');
       for (const uuid of characteristicReceiveUuids.values()) {
         const target = this.getCharacteristic('fb' + uuid);
 
-        target.subscribe();
-        target.on('data', data => this._handleIncoming(uuid, data));
+        if (target) {
+          target.subscribe();
+          target.on('data', data => this._handleIncoming(uuid, data));
+        } else {
+          Logger.debug(`Handshake id ${uuid} for listener not found`);
+        }
       }
 
       Logger.info(`Device connected ${this.peripheral.advertisement.localName}`);
